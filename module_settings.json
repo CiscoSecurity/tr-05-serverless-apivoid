@@ -1,0 +1,11 @@
+{
+  "name": "APIVoid",
+  "jwt": {
+        "key": "APIVoid API Key"
+  },
+  "region": {
+    "us": null,
+    "eu": null,
+    "apjc": null
+  }
+}
