@@ -1,8 +1,11 @@
 from datetime import datetime
+from http import HTTPStatus
+from unittest.mock import MagicMock
 
 from authlib.jose import jwt
 from pytest import fixture
 
+from api.errors import PERMISSION_DENIED, INVALID_ARGUMENT, UNAUTHORIZED
 from app import app
 
 
@@ -53,3 +56,120 @@ def invalid_jwt(valid_jwt):
     payload = jwt_encode(payload)
 
     return '.'.join([header, payload, signature])
+
+
+def apivoid_response_mock(status_code, payload=None, reason=None):
+    mock_response = MagicMock()
+
+    mock_response.status_code = status_code
+    mock_response.ok = status_code == HTTPStatus.OK
+
+    mock_response.json = lambda: payload
+    mock_response.reason = reason
+
+    return mock_response
+
+
+def expected_payload(route, body):
+    if route.endswith('/deliberate/observables'):
+        return {'data': {}}
+
+    if route.endswith('/refer/observables'):
+        return {'data': []}
+
+    return body
+
+
+@fixture(scope='function')
+def apivoid_health_response_ok():
+    return apivoid_response_mock(
+        HTTPStatus.OK, payload={
+            "elapsed_time": "0.01",
+            "credits_remained": 2517.01,
+            "estimated_queries": "31,462",
+            "success": "true"
+        }
+    )
+
+
+@fixture(scope='function')
+def apivoid_internal_server_error():
+    return apivoid_response_mock(
+        HTTPStatus.INTERNAL_SERVER_ERROR, reason='Internal Server Error'
+    )
+
+
+@fixture(scope='session')
+def apivoid_response_unauthorized_creds(secret_key):
+    return apivoid_response_mock(
+        HTTPStatus.OK,
+        {
+            "elapsed_time": "0.00",
+            "error": "API key is not valid"
+        }
+    )
+
+
+@fixture(scope='module')
+def invalid_jwt_expected_payload(route):
+    return expected_payload(
+        route,
+        {
+            "errors": [
+                {
+                    "code": PERMISSION_DENIED,
+                    "message": "Invalid Authorization Bearer JWT.",
+                    "type": "fatal"
+                }
+            ]
+        }
+    )
+
+
+@fixture(scope='module')
+def invalid_json_expected_payload(route):
+    return expected_payload(
+        route,
+        {
+            "errors": [
+                {"code": INVALID_ARGUMENT,
+                 "message":
+                     "Invalid JSON payload received. "
+                     "{0: {'value': ['Missing data for required field.']}}",
+                 "type": "fatal"
+                 }
+            ]
+        }
+    )
+
+
+@fixture(scope='module')
+def unauthorized_creds_expected_payload(route):
+    return expected_payload(
+        route,
+        {
+            "errors": [
+                {
+                    "code": UNAUTHORIZED,
+                    "message": "API key is not valid",
+                    "type": "fatal"
+                }
+            ]
+        }
+    )
+
+
+@fixture(scope='module')
+def internal_server_error_expected_payload(route):
+    return expected_payload(
+        route,
+        {
+            "errors": [
+                {
+                    "code": "internal server error",
+                    "message": "An error occurred on the APIVoid side.",
+                    "type": "fatal"
+                }
+            ]
+        }
+    )
