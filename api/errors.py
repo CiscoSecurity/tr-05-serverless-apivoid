@@ -49,10 +49,3 @@ class InvalidArgumentError(TRFormattedError):
             INVALID_ARGUMENT,
             f'Invalid JSON payload received. {message}'
         )
-
-
-class UnsupportedObservableTypeError(InvalidArgumentError):
-    def __init__(self, type_):
-        super().__init__(
-            f'Unsupported observable error: {type_}'
-        )
