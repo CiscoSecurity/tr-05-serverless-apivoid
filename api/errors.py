@@ -17,17 +17,17 @@ class TRFormattedError(Exception):
                 'message': self.message}
 
 
-API_ERRORS_STANDARDISATION = {
-    'API key is not valid': UNAUTHORIZED,
-    'API key has been disabled or does not exist': UNAUTHORIZED,
-
-}
-
-
 class CriticalError(TRFormattedError):
     def __init__(self, message):
-        code = API_ERRORS_STANDARDISATION.get(message)
-        super().__init__(code, message)
+        api_errors_standardisation = {
+            'API key is not valid': UNAUTHORIZED,
+            'API key has been disabled or does not exist': UNAUTHORIZED,
+        }
+
+        super().__init__(
+            api_errors_standardisation.get(message),
+            message
+        )
 
 
 class InvalidJWTError(TRFormattedError):
