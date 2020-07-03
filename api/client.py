@@ -5,7 +5,7 @@ from flask import current_app
 from api.errors import CriticalError, StandardHttpError
 
 
-NOT_CRITICAL_ERRORS = ("IP address is not valid", "Host is not valid")
+NOT_CRITICAL_ERRORS = ('IP address is not valid', 'Host is not valid')
 
 
 class APIVoidClient:

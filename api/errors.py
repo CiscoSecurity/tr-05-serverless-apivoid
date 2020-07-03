@@ -18,8 +18,8 @@ class TRFormattedError(Exception):
 
 
 API_ERRORS_STANDARDISATION = {
-    "API key is not valid": UNAUTHORIZED,
-    "API key has been disabled or does not exist": UNAUTHORIZED,
+    'API key is not valid': UNAUTHORIZED,
+    'API key has been disabled or does not exist': UNAUTHORIZED,
 
 }
 
