@@ -70,11 +70,11 @@ def apivoid_api_response_mock(status_code, payload=None, reason=None):
     return mock_response
 
 
-def expected_payload(r, body):
-    if r.endswith('/deliberate/observables'):
+def expected_payload(route, body):
+    if route.endswith('/deliberate/observables'):
         return {'data': {}}
 
-    if r.endswith('/refer/observables'):
+    if route.endswith('/refer/observables'):
         return {'data': []}
 
     return body
