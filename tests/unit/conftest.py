@@ -58,7 +58,7 @@ def invalid_jwt(valid_jwt):
     return '.'.join([header, payload, signature])
 
 
-def apivoid_api_response_mock(status_code, payload=None, reason=None):
+def apivoid_response_mock(status_code, payload=None, reason=None):
     mock_response = MagicMock()
 
     mock_response.status_code = status_code
@@ -82,7 +82,7 @@ def expected_payload(route, body):
 
 @fixture(scope='function')
 def apivoid_health_response_ok():
-    return apivoid_api_response_mock(
+    return apivoid_response_mock(
         HTTPStatus.OK, payload={
             "elapsed_time": "0.01",
             "credits_remained": 2517.01,
@@ -94,14 +94,14 @@ def apivoid_health_response_ok():
 
 @fixture(scope='function')
 def apivoid_internal_server_error():
-    return apivoid_api_response_mock(
+    return apivoid_response_mock(
         HTTPStatus.INTERNAL_SERVER_ERROR, reason='Internal Server Error'
     )
 
 
 @fixture(scope='session')
 def apivoid_response_unauthorized_creds(secret_key):
-    return apivoid_api_response_mock(
+    return apivoid_response_mock(
         HTTPStatus.OK,
         {
             "elapsed_time": "0.00",
