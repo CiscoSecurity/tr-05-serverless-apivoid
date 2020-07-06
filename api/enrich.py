@@ -39,7 +39,10 @@ def extract_sighting(engine):
         'source': engine['engine'],
         'source_uri': engine['reference'],
         'type': 'sighting',
-        'observed_time': {'start_time': datetime.utcnow().isoformat() + 'Z'},
+        'observed_time': {
+            'start_time': datetime.utcnow().isoformat() + 'Z',
+            'end_time': datetime.utcnow().isoformat() + 'Z'
+        },
         'id': f'transient:sighting-{uuid4()}',
         **CTIM_DEFAULTS,
     }
