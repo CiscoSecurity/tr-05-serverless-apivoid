@@ -36,12 +36,11 @@ def jsonify_result():
     result = {'data': {}}
 
     if g.get('sightings'):
-        result['data']['sightings'] = format_docs(g.verdicts)
+        result['data']['sightings'] = format_docs(g.sightings)
 
     if g.get('errors'):
         result['errors'] = g.errors
-
-    if not result['data']:
-        del result['data']
+        if not result['data']:
+            del result['data']
 
     return jsonify(result)

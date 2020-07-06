@@ -35,3 +35,11 @@ class APIVoidClient:
 
     def check_health(self):
         _ = self._get('iprep', {'stats': 'true'})
+
+    def get_data(self, observable):
+        data = {}
+        if observable['type'] == 'ip':
+            data = self._get('iprep', {'ip': observable['value']})
+        elif observable['type'] == 'domain':
+            data = self._get('domainbl', {'host': observable['value']})
+        return data
