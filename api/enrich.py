@@ -10,6 +10,7 @@ from api.client import APIVoidClient
 
 enrich_api = Blueprint('enrich', __name__)
 
+
 get_observables = partial(get_json, schema=ObservableSchema(many=True))
 
 CTIM_DEFAULTS = {
@@ -31,7 +32,7 @@ def get_confidence(engine):
 
 
 def extract_sighting(engine):
-    doc = {
+    return {
         'count': 1,
         'confidence': get_confidence(engine),
         'description': 'Detected on blocklist',
@@ -42,8 +43,6 @@ def extract_sighting(engine):
         'id': f'transient:sighting-{uuid4()}',
         **CTIM_DEFAULTS,
     }
-
-    return doc
 
 
 def get_engines(output):
