@@ -93,4 +93,3 @@ def test_enrich_call_with_extended_error_handling(
         assert response['errors'] == \
             internal_server_error_expected_payload['errors']
     assert response['data'] == success_enrich_expected_payload['data']
-

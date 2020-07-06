@@ -8,7 +8,6 @@ from api.schemas import ObservableSchema
 from api.utils import get_json, get_jwt, jsonify_data, jsonify_result
 from api.client import APIVoidClient
 
-
 enrich_api = Blueprint('enrich', __name__)
 
 get_observables = partial(get_json, schema=ObservableSchema(many=True))
