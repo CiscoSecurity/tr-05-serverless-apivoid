@@ -32,6 +32,7 @@ def get_confidence(engine):
 
 
 def extract_sighting(engine):
+    time_now = datetime.utcnow().isoformat() + 'Z'
     return {
         'count': 1,
         'confidence': get_confidence(engine),
@@ -40,8 +41,8 @@ def extract_sighting(engine):
         'source_uri': engine['reference'],
         'type': 'sighting',
         'observed_time': {
-            'start_time': datetime.utcnow().isoformat() + 'Z',
-            'end_time': datetime.utcnow().isoformat() + 'Z'
+            'start_time': time_now,
+            'end_time': time_now
         },
         'id': f'transient:sighting-{uuid4()}',
         **CTIM_DEFAULTS,
