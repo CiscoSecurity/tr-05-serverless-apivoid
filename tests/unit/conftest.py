@@ -93,6 +93,55 @@ def apivoid_health_response_ok():
 
 
 @fixture(scope='function')
+def apivoid_success_response():
+    return apivoid_response_mock(
+        HTTPStatus.OK, payload={
+                "data": {
+                    "report": {
+                        "ip": "1.1.1.1",
+                        "blacklists": {
+                            "engines": {
+                                "15": {
+                                    "engine": "Blacklists_co",
+                                    "detected": True,
+                                    "reference": "http://blacklists.co/",
+                                    "elapsed": "0.00"
+                                },
+                                "45": {
+                                    "engine": "LAPPS Grid Blacklist",
+                                    "detected": True,
+                                    "reference": "http://www.lappsgrid.org/",
+                                    "elapsed": "0.00"
+                                },
+                                "65": {
+                                    "engine": "PhishTank",
+                                    "detected": False,
+                                    "reference": "http://www.phishtank.com/",
+                                    "elapsed": "0.00"
+                                },
+                                "72": {
+                                    "engine": "Rutgers Drop List",
+                                    "detected": False,
+                                    "reference": "http://www.rutgers.edu/",
+                                    "elapsed": "0.00"
+                                },
+                            },
+                            "detections": 2,
+                            "engines_count": 88,
+                            "detection_rate": "3%",
+                            "scantime": "0.58"
+                        },
+                    }
+                },
+                "credits_remained": 2511.65,
+                "estimated_queries": "31,395",
+                "elapsed_time": "0.68",
+                "success": "true"
+            }
+    )
+
+
+@fixture(scope='function')
 def apivoid_internal_server_error():
     return apivoid_response_mock(
         HTTPStatus.INTERNAL_SERVER_ERROR, reason='Internal Server Error'
@@ -106,6 +155,17 @@ def apivoid_response_unauthorized_creds(secret_key):
         {
             "elapsed_time": "0.00",
             "error": "API key is not valid"
+        }
+    )
+
+
+@fixture(scope='session')
+def apivoid_response_invalid_host(secret_key):
+    return apivoid_response_mock(
+        HTTPStatus.OK,
+        {
+            "elapsed_time": "0.00",
+            "error": "Host is not valid"
         }
     )
 
@@ -173,3 +233,39 @@ def internal_server_error_expected_payload(route):
             ]
         }
     )
+
+
+@fixture(scope='module')
+def success_enrich_body():
+    return {
+        "data": {
+            "sightings": {
+                "count": 2,
+                "docs": [
+                    {
+                        "confidence": "High",
+                        "count": 1,
+                        "description": "Detected on blocklist",
+                        "schema_version": "1.0.17",
+                        "source": "Blacklists_co",
+                        "source_uri": "http://blacklists.co/",
+                        "type": "sighting"
+                    },
+                    {
+                        "confidence": "High",
+                        "count": 1,
+                        "description": "Detected on blocklist",
+                        "schema_version": "1.0.17",
+                        "source": "LAPPS Grid Blacklist",
+                        "source_uri": "http://www.lappsgrid.org/",
+                        "type": "sighting"
+                    }
+                ]
+            }
+        }
+    }
+
+
+@fixture(scope='module')
+def success_enrich_expected_payload(route, success_enrich_body):
+    return expected_payload(route, success_enrich_body)
