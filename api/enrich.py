@@ -13,10 +13,6 @@ enrich_api = Blueprint('enrich', __name__)
 
 get_observables = partial(get_json, schema=ObservableSchema(many=True))
 
-CTIM_DEFAULTS = {
-    'schema_version': '1.0.17',
-}
-
 
 @enrich_api.route('/deliberate/observables', methods=['POST'])
 def deliberate_observables():
@@ -45,7 +41,7 @@ def extract_sighting(engine):
             'end_time': time_now
         },
         'id': f'transient:sighting-{uuid4()}',
-        **CTIM_DEFAULTS,
+        **current_app.config['CTIM_DEFAULTS'],
     }
 
 

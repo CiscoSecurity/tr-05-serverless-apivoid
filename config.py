@@ -20,3 +20,7 @@ class Config:
         assert CTR_ENTITIES_LIMIT > 0
     except (KeyError, ValueError, AssertionError):
         CTR_ENTITIES_LIMIT = CTR_DEFAULT_ENTITIES_LIMIT
+
+    CTIM_DEFAULTS = {
+        'schema_version': '1.0.17',
+    }
