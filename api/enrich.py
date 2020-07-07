@@ -27,6 +27,19 @@ def get_confidence(engine):
         return 'High'
 
 
+def extract_indicator(engine):
+    return {
+        'confidence': get_confidence(engine),
+        'tlp': 'white',
+        'valid_time': {},
+        'short_description': f"Feed: {engine['engine']}",
+        'type': 'indicator',
+        'id': f'transient:indicator-{uuid4()}',
+        'producer': 'APIVoid',
+        **current_app.config['CTIM_DEFAULTS'],
+    }
+
+
 def extract_sighting(engine):
     time_now = datetime.utcnow().isoformat() + 'Z'
     return {
@@ -61,11 +74,13 @@ def observe_observables():
     client = APIVoidClient(payload)
     observables = get_observables()
     g.sightings = []
+    g.indicators = []
     for observable in observables:
         output = client.get_data(observable)
         if output:
             for engine in get_engines(output):
                 g.sightings.append(extract_sighting(engine))
+                g.indicators.append(extract_indicator(engine))
 
     return jsonify_result()
 
