@@ -58,6 +58,17 @@ def extract_sighting(engine):
     }
 
 
+def extract_relationship(sighting_id, indicator_id):
+    return {
+        'type': 'relationship',
+        'relationship_type': 'member-of',
+        'id': f'transient:relationship-{uuid4()}',
+        'source_ref': sighting_id,
+        'target_ref': indicator_id,
+        **current_app.config['CTIM_DEFAULTS'],
+    }
+
+
 def get_engines(output):
     result = []
     engines = output['data']['report']['blacklists']['engines'].values()
@@ -75,12 +86,18 @@ def observe_observables():
     observables = get_observables()
     g.sightings = []
     g.indicators = []
+    g.relationships = []
     for observable in observables:
         output = client.get_data(observable)
         if output:
             for engine in get_engines(output):
-                g.sightings.append(extract_sighting(engine))
-                g.indicators.append(extract_indicator(engine))
+                sighting = extract_sighting(engine)
+                g.sightings.append(sighting)
+                indicator = extract_indicator(engine)
+                g.indicators.append(indicator)
+                g.relationships.append(
+                    extract_relationship(sighting['id'], indicator['id'])
+                )
 
     return jsonify_result()
 

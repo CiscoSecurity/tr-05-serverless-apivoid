@@ -284,6 +284,21 @@ def success_enrich_body():
                         "type": "sighting"
                     }
                 ]
+            },
+            "relationships": {
+                "count": 2,
+                "docs": [
+                    {
+                        "relationship_type": "member-of",
+                        "schema_version": "1.0.17",
+                        "type": "relationship"
+                    },
+                    {
+                        "relationship_type": "member-of",
+                        "schema_version": "1.0.17",
+                        "type": "relationship"
+                    }
+                ]
             }
         }
     }
