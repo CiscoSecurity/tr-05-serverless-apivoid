@@ -92,9 +92,9 @@ def observe_observables():
         if output:
             for engine in get_engines(output):
                 sighting = extract_sighting(engine)
-                g.sightings.append(extract_sighting(engine))
+                g.sightings.append(sighting)
                 indicator = extract_indicator(engine)
-                g.indicators.append(extract_indicator(engine))
+                g.indicators.append(indicator)
                 g.relationships.append(
                     extract_relationship(sighting['id'], indicator['id'])
                 )
