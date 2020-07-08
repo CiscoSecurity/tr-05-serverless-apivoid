@@ -239,6 +239,29 @@ def internal_server_error_expected_payload(route):
 def success_enrich_body():
     return {
         "data": {
+            "indicators": {
+                "count": 2,
+                "docs": [
+                    {
+                        "confidence": "High",
+                        "producer": "APIVoid",
+                        "schema_version": "1.0.17",
+                        "short_description": "Feed: Blacklists_co",
+                        "tlp": "white",
+                        "type": "indicator",
+                        "valid_time": {}
+                    },
+                    {
+                        "confidence": "High",
+                        "producer": "APIVoid",
+                        "schema_version": "1.0.17",
+                        "short_description": "Feed: LAPPS Grid Blacklist",
+                        "tlp": "white",
+                        "type": "indicator",
+                        "valid_time": {}
+                    }
+                ]
+            },
             "sightings": {
                 "count": 2,
                 "docs": [
