@@ -61,6 +61,10 @@ def test_enrich_call_success(
             assert doc.pop('observed_time')
         for doc in response['data']['indicators']['docs']:
             assert doc.pop('id')
+        for doc in response['data']['relationships']['docs']:
+            assert doc.pop('id')
+            assert doc.pop('source_ref').startswith('transient:sighting-')
+            assert doc.pop('target_ref').startswith('transient:indicator-')
     assert response == success_enrich_expected_payload
 
 
@@ -94,6 +98,10 @@ def test_enrich_call_with_extended_error_handling(
             assert doc.pop('observed_time')
         for doc in response['data']['indicators']['docs']:
             assert doc.pop('id')
+        for doc in response['data']['relationships']['docs']:
+            assert doc.pop('id')
+            assert doc.pop('source_ref').startswith('transient:sighting-')
+            assert doc.pop('target_ref').startswith('transient:indicator-')
         assert response['errors'] == \
             internal_server_error_expected_payload['errors']
     assert response['data'] == success_enrich_expected_payload['data']
