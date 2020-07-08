@@ -3,7 +3,7 @@
 # APIVoid Relay
 
 Concrete Relay implementation using
-[APIVoid](https://app.apivoid.com/dashboard)
+[APIVoid](https://www.apivoid.com/about/)
 as a third-party Cyber Threat Intelligence service provider.
 
 The Relay itself is just a simple application written in Python that can be
@@ -277,7 +277,7 @@ Each response from the APIVoid API for the supported observables generates the f
 - `Sighting` from each entry in `.data.report.blacklists.engines` where `.data.report.blacklists.engines[].detected` is `true`:
   - Value from `.data.report.blacklists.engines[].engine` will map to `source`
   - Value from `.data.report.blacklists.engines[].reference` will map to `source_uri`
-  - Value of query time will map to `.observed_time.start_time`
+  - The query time will map to `.observed_time.start_time`
 
 - `Indicator` from each entry in `.data.report.blacklists.engines` where `.data.report.blacklists.engines[].detected` is `true`:
   - `Indicator` TLP will be `white`
