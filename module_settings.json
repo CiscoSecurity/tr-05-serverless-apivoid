@@ -4,8 +4,8 @@
         "key": "APIVoid API Key"
   },
   "region": {
-    "us": null,
-    "eu": null,
-    "apjc": null
+    "us": "7564fde0-5d68-49a3-b195-54ebc215754b",
+    "eu": "bfa34f8e-a646-4399-a3b4-db418b6ac1be",
+    "apjc": "561929a0-6dea-453a-b88f-be544f92fa86"
   }
 }
