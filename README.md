@@ -282,4 +282,4 @@ Each response from the APIVoid API for the supported observables generates the f
   - `Indicator` TLP will be `white`
   - Value from `.data.report.blacklists.engines[].engine` will map to `short_description`
   
-- `Relationship` between `Sighting` and `Indicator` with the relationship type of `member-of` because they are based on feeds.
+- `Relationship` type between `Sighting` and `Indicator` is `member-of` because `Sightings` and `Indicators` are based on feeds.
