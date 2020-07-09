@@ -247,7 +247,6 @@ header set to `Bearer <JWT>`.
     - `Sighting`,
     - `Relationship`.
 
-
 ### Supported Types of Observables
 
 - `ip`
@@ -284,6 +283,3 @@ Each response from the APIVoid API for the supported observables generates the f
   - Value from `.data.report.blacklists.engines[].engine` will map to `short_description`
   
 - `Relationship` between `Sighting` and `Indicator` with the relationship type of `member-of` because they are based on feeds.
-
-
-
