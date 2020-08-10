@@ -33,6 +33,7 @@ def extract_indicator(engine):
         'tlp': 'white',
         'valid_time': {},
         'short_description': f"Feed: {engine['engine']}",
+        'title': f"Feed: {engine['engine']}",
         'type': 'indicator',
         'id': f'transient:indicator-{uuid4()}',
         'producer': 'APIVoid',
