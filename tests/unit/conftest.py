@@ -249,6 +249,7 @@ def success_enrich_body():
                         "short_description": "Feed: Blacklists_co",
                         "tlp": "white",
                         "type": "indicator",
+                        "title": "Feed: Blacklists_co",
                         "valid_time": {}
                     },
                     {
@@ -258,6 +259,7 @@ def success_enrich_body():
                         "short_description": "Feed: LAPPS Grid Blacklist",
                         "tlp": "white",
                         "type": "indicator",
+                        "title": "Feed: LAPPS Grid Blacklist",
                         "valid_time": {}
                     }
                 ]
