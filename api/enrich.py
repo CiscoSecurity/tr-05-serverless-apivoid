@@ -36,6 +36,7 @@ def extract_indicator(engine):
         'type': 'indicator',
         'id': f'transient:indicator-{uuid4()}',
         'producer': 'APIVoid',
+        'title': f"Feed: {engine['engine']}",
         **current_app.config['CTIM_DEFAULTS'],
     }
 
