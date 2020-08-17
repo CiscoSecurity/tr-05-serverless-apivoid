@@ -41,7 +41,7 @@ def extract_indicator(engine):
     }
 
 
-def extract_sighting(engine):
+def extract_sighting(observable, engine):
     time_now = datetime.utcnow().isoformat() + 'Z'
     return {
         'count': 1,
@@ -49,6 +49,7 @@ def extract_sighting(engine):
         'description': 'Detected on blocklist',
         'source': engine['engine'],
         'source_uri': engine['reference'],
+        'observables': [observable],
         'type': 'sighting',
         'observed_time': {
             'start_time': time_now,
@@ -92,7 +93,7 @@ def observe_observables():
         output = client.get_data(observable)
         if output:
             for engine in get_engines(output):
-                sighting = extract_sighting(engine)
+                sighting = extract_sighting(observable, engine)
                 g.sightings.append(sighting)
                 indicator = extract_indicator(engine)
                 g.indicators.append(indicator)
