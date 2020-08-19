@@ -105,3 +105,22 @@ def test_enrich_call_with_extended_error_handling(
         assert response['errors'] == \
             internal_server_error_expected_payload['errors']
     assert response['data'] == success_enrich_expected_payload['data']
+
+
+@patch('requests.get')
+def test_enrich_with_ssl_error(
+        mock_request, route, client, valid_jwt,
+        valid_json, apivoid_ssl_exception_mock,
+        ssl_error_expected_payload
+):
+
+    mock_request.side_effect = apivoid_ssl_exception_mock
+
+    response = client.post(
+        route, headers=headers(valid_jwt), json=valid_json
+    )
+
+    assert response.status_code == HTTPStatus.OK
+
+    response = response.get_json()
+    assert response == ssl_error_expected_payload
