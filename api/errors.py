@@ -30,6 +30,16 @@ class CriticalError(TRFormattedError):
         )
 
 
+class APIVoidSSLError(TRFormattedError):
+    def __init__(self, error):
+        error = error.args[0].reason.args[0]
+        message = getattr(error, 'verify_message', error.args[0]).capitalize()
+        super().__init__(
+            UNKNOWN,
+            f'Unable to verify SSL certificate: {message}'
+        )
+
+
 class InvalidJWTError(TRFormattedError):
     def __init__(self, message):
         super().__init__(PERMISSION_DENIED, message)
