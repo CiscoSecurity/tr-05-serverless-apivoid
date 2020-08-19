@@ -1,7 +1,8 @@
 from authlib.jose import jwt
 from authlib.jose.errors import JoseError
 from flask import request, current_app, jsonify, g
-from api.errors import InvalidArgumentError, InvalidJWTError
+from requests.exceptions import SSLError
+from api.errors import InvalidArgumentError, InvalidJWTError, APIVoidSSLError
 
 
 def get_jwt():
@@ -48,3 +49,12 @@ def jsonify_result():
             del result['data']
 
     return jsonify(result)
+
+
+def ssl_error_handler(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except SSLError as error:
+            raise APIVoidSSLError(error)
+    return wrapper

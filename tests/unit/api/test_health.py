@@ -69,3 +69,22 @@ def test_health_call_failure(
 
     assert response.status_code == HTTPStatus.OK
     assert response.json == internal_server_error_expected_payload
+
+
+@patch('requests.get')
+def test_health_with_ssl_error(
+        mock_request, route, client, valid_jwt,
+        apivoid_ssl_exception_mock,
+        ssl_error_expected_payload
+):
+
+    mock_request.side_effect = apivoid_ssl_exception_mock
+
+    response = client.post(
+        route, headers=headers(valid_jwt)
+    )
+
+    assert response.status_code == HTTPStatus.OK
+
+    response = response.get_json()
+    assert response == ssl_error_expected_payload

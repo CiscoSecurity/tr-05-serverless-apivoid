@@ -3,6 +3,7 @@ import requests
 from flask import current_app
 
 from api.errors import CriticalError, StandardHttpError
+from api.utils import ssl_error_handler
 
 
 NOT_CRITICAL_ERRORS = ('IP address is not valid', 'Host is not valid')
@@ -16,6 +17,7 @@ class APIVoidClient:
         }
         self.params = payload
 
+    @ssl_error_handler
     def _get(self, endpoint, params):
         params.update(self.params)
         url = current_app.config['API_URL'].format(endpoint=endpoint)
