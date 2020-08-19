@@ -303,6 +303,12 @@ def success_enrich_body():
                         "schema_version": "1.0.17",
                         "source": "Blacklists_co",
                         "source_uri": "http://blacklists.co/",
+                        "observables": [
+                            {
+                                "type": "ip",
+                                "value": "1.1.1.1"
+                            }
+                        ],
                         "type": "sighting"
                     },
                     {
@@ -312,6 +318,12 @@ def success_enrich_body():
                         "schema_version": "1.0.17",
                         "source": "LAPPS Grid Blacklist",
                         "source_uri": "http://www.lappsgrid.org/",
+                        "observables": [
+                            {
+                                "type": "ip",
+                                "value": "1.1.1.1"
+                            }
+                        ],
                         "type": "sighting"
                     }
                 ]
