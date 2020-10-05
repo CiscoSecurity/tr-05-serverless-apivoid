@@ -1,4 +1,5 @@
 import os
+from uuid import uuid4
 
 from version import VERSION
 
@@ -24,3 +25,5 @@ class Config:
     CTIM_DEFAULTS = {
         'schema_version': '1.0.17',
     }
+
+    NAMESPACE_BASE = uuid4()

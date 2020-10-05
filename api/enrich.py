@@ -1,5 +1,5 @@
 from functools import partial
-from uuid import uuid4
+from uuid import uuid4, uuid5
 from datetime import datetime
 
 from flask import Blueprint, g, current_app
@@ -27,6 +27,12 @@ def get_confidence(engine):
         return 'High'
 
 
+def get_transient_id(entity_type, base_value=None):
+    uuid = (uuid5(current_app.config['NAMESPACE_BASE'], base_value)
+            if base_value else uuid4())
+    return f'transient:{entity_type}-{uuid}'
+
+
 def extract_indicator(engine):
     return {
         'confidence': get_confidence(engine),
@@ -34,7 +40,7 @@ def extract_indicator(engine):
         'valid_time': {},
         'short_description': f"Feed: {engine['engine']}",
         'type': 'indicator',
-        'id': f'transient:indicator-{uuid4()}',
+        'id': get_transient_id('indicator', engine['engine']),
         'producer': 'APIVoid',
         'title': f"Feed: {engine['engine']}",
         **current_app.config['CTIM_DEFAULTS'],
