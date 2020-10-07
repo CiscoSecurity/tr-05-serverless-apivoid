@@ -34,20 +34,17 @@ def get_transient_id(entity_type, base_value=None):
 
 
 def extract_indicator(engine):
-    doc = {
+    return {
         'confidence': get_confidence(engine),
         'tlp': 'white',
         'valid_time': {},
+        'id': get_transient_id('indicator', engine['engine']),
         'short_description': f"Feed: {engine['engine']}",
         'type': 'indicator',
         'producer': 'APIVoid',
         'title': f"Feed: {engine['engine']}",
         **current_app.config['CTIM_DEFAULTS'],
     }
-
-    doc.update(id=get_transient_id('indicator', str(doc)))
-
-    return doc
 
 
 def extract_sighting(observable, engine):
