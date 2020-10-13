@@ -1,17 +1,48 @@
 from authlib.jose import jwt
-from authlib.jose.errors import JoseError
+from authlib.jose.errors import BadSignatureError, DecodeError
 from flask import request, current_app, jsonify, g
 from requests.exceptions import SSLError
-from api.errors import InvalidArgumentError, InvalidJWTError, APIVoidSSLError
+from api.errors import InvalidArgumentError, AuthorizationError, APIVoidSSLError
 
 
 def get_jwt():
+    """
+    Get Authorization token and validate its signature
+    against the application's secret key, .
+    """
+
+    expected_errors = {
+        KeyError: 'Wrong JWT payload structure',
+        TypeError: '<SECRET_KEY> is missing',
+        BadSignatureError: 'Failed to decode JWT with provided key',
+        DecodeError: 'Wrong JWT structure'
+    }
+
+    token = get_auth_token()
+    try:
+        payload = jwt.decode(token, current_app.config['SECRET_KEY'])
+        return payload['key']
+    except tuple(expected_errors) as error:
+        message = expected_errors[error.__class__]
+        raise AuthorizationError(message)
+
+
+def get_auth_token():
+    """
+    Parse the incoming request's Authorization header and validate it.
+    """
+
+    expected_errors = {
+        KeyError: 'Authorization header is missing',
+        AssertionError: 'Wrong authorization type'
+    }
+
     try:
         scheme, token = request.headers['Authorization'].split()
         assert scheme.lower() == 'bearer'
-        return jwt.decode(token, current_app.config['SECRET_KEY'])
-    except (KeyError, ValueError, AssertionError, JoseError):
-        raise InvalidJWTError('Invalid Authorization Bearer JWT.')
+        return token
+    except tuple(expected_errors) as error:
+        raise AuthorizationError(expected_errors[error.__class__])
 
 
 def get_json(schema):

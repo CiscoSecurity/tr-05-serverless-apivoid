@@ -2,6 +2,7 @@ INVALID_ARGUMENT = 'invalid argument'
 PERMISSION_DENIED = 'permission denied'
 UNKNOWN = 'unknown'
 UNAUTHORIZED = 'unauthorized'
+AUTH_ERROR = 'authorization error'
 
 
 class TRFormattedError(Exception):
@@ -40,9 +41,12 @@ class APIVoidSSLError(TRFormattedError):
         )
 
 
-class InvalidJWTError(TRFormattedError):
+class AuthorizationError(TRFormattedError):
     def __init__(self, message):
-        super().__init__(PERMISSION_DENIED, message)
+        super().__init__(
+            AUTH_ERROR,
+            f'Authorization failed: {message}'
+        )
 
 
 class StandardHttpError(TRFormattedError):
