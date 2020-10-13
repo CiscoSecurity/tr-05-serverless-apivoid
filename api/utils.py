@@ -2,7 +2,11 @@ from authlib.jose import jwt
 from authlib.jose.errors import BadSignatureError, DecodeError
 from flask import request, current_app, jsonify, g
 from requests.exceptions import SSLError
-from api.errors import InvalidArgumentError, AuthorizationError, APIVoidSSLError
+from api.errors import (
+    InvalidArgumentError,
+    AuthorizationError,
+    APIVoidSSLError
+)
 
 
 def get_jwt():
