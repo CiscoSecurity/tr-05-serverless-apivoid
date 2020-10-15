@@ -6,7 +6,7 @@ from requests.exceptions import SSLError
 from authlib.jose import jwt
 from pytest import fixture
 
-from api.errors import PERMISSION_DENIED, INVALID_ARGUMENT, UNAUTHORIZED
+from api.errors import INVALID_ARGUMENT, AUTH_ERROR
 from app import app
 
 
@@ -30,7 +30,7 @@ def client(secret_key):
 def valid_jwt(client):
     header = {'alg': 'HS256'}
 
-    payload = {'username': 'gdavoian', 'superuser': False}
+    payload = {'key': 'test_api_key'}
 
     secret_key = client.application.secret_key
 
@@ -178,8 +178,26 @@ def invalid_jwt_expected_payload(route):
         {
             "errors": [
                 {
-                    "code": PERMISSION_DENIED,
-                    "message": "Invalid Authorization Bearer JWT.",
+                    "code": AUTH_ERROR,
+                    "message": "Authorization failed: "
+                               "Failed to decode JWT with provided key",
+                    "type": "fatal"
+                }
+            ]
+        }
+    )
+
+
+@fixture(scope='module')
+def authorization_header_is_missing_expected_payload(route):
+    return expected_payload(
+        route,
+        {
+            "errors": [
+                {
+                    "code": "authorization error",
+                    "message": "Authorization failed: "
+                               "Authorization header is missing",
                     "type": "fatal"
                 }
             ]
@@ -193,12 +211,13 @@ def invalid_json_expected_payload(route):
         route,
         {
             "errors": [
-                {"code": INVALID_ARGUMENT,
-                 "message":
-                     "Invalid JSON payload received. "
-                     "{0: {'value': ['Missing data for required field.']}}",
-                 "type": "fatal"
-                 }
+                {
+                    "code": INVALID_ARGUMENT,
+                    "message":
+                        "Invalid JSON payload received. "
+                        "{0: {'value': ['Missing data for required field.']}}",
+                    "type": "fatal"
+                }
             ]
         }
     )
@@ -211,8 +230,8 @@ def unauthorized_creds_expected_payload(route):
         {
             "errors": [
                 {
-                    "code": UNAUTHORIZED,
-                    "message": "API key is not valid",
+                    "code": AUTH_ERROR,
+                    "message": "Authorization failed: API key is not valid",
                     "type": "fatal"
                 }
             ]
