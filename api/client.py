@@ -2,11 +2,12 @@ import requests
 
 from flask import current_app
 
-from api.errors import CriticalError, StandardHttpError
+from api.errors import CriticalError, StandardHttpError, AuthorizationError
 from api.utils import ssl_error_handler
 
 
 NOT_CRITICAL_ERRORS = ('IP address is not valid', 'Host is not valid')
+INVALID_API_KEY_MESSAGE = 'API key is not valid'
 
 
 class APIVoidClient:
@@ -15,7 +16,7 @@ class APIVoidClient:
         self.headers = {
             'User-Agent': current_app.config['USER_AGENT']
         }
-        self.params = payload
+        self.params = {'key': payload}
 
     @ssl_error_handler
     def _get(self, endpoint, params):
@@ -30,6 +31,8 @@ class APIVoidClient:
         if error:
             if error in NOT_CRITICAL_ERRORS:
                 return {}
+            elif error == INVALID_API_KEY_MESSAGE:
+                raise AuthorizationError(error)
             else:
                 raise CriticalError(error)
 
