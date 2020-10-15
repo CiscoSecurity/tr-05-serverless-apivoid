@@ -7,7 +7,10 @@ from api.utils import ssl_error_handler
 
 
 NOT_CRITICAL_ERRORS = ('IP address is not valid', 'Host is not valid')
-INVALID_API_KEY_MESSAGE = 'API key is not valid'
+INVALID_API_KEY_MESSAGES = (
+    'API key is not valid',
+    'API key has been disabled or does not exist'
+)
 
 
 class APIVoidClient:
@@ -31,7 +34,7 @@ class APIVoidClient:
         if error:
             if error in NOT_CRITICAL_ERRORS:
                 return {}
-            elif error == INVALID_API_KEY_MESSAGE:
+            elif error in INVALID_API_KEY_MESSAGES:
                 raise AuthorizationError(error)
             else:
                 raise CriticalError(error)
