@@ -17,7 +17,7 @@ jobs:
           python-version: 3.7
 
       - name: Update snapshots
-        run: python3 scripts/snapshot_updater.py
+        run: python3 snapshot_updater.py
 
       - name: Commit files
         run: |
