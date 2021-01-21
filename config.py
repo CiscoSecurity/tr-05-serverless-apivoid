@@ -23,7 +23,7 @@ class Config:
         CTR_ENTITIES_LIMIT = CTR_DEFAULT_ENTITIES_LIMIT
 
     CTIM_DEFAULTS = {
-        'schema_version': '1.0.17',
+        'schema_version': '1.0.22',
     }
 
     NAMESPACE_BASE = NAMESPACE_X500
