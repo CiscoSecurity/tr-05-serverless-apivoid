@@ -293,7 +293,7 @@ def success_enrich_body():
                     {
                         "confidence": "High",
                         "producer": "APIVoid",
-                        "schema_version": "1.0.17",
+                        "schema_version": "1.0.22",
                         "short_description": "Feed: Blacklists_co",
                         "tlp": "white",
                         "type": "indicator",
@@ -303,7 +303,7 @@ def success_enrich_body():
                     {
                         "confidence": "High",
                         "producer": "APIVoid",
-                        "schema_version": "1.0.17",
+                        "schema_version": "1.0.22",
                         "short_description": "Feed: LAPPS Grid Blacklist",
                         "tlp": "white",
                         "type": "indicator",
@@ -319,7 +319,7 @@ def success_enrich_body():
                         "confidence": "High",
                         "count": 1,
                         "description": "Detected on blocklist",
-                        "schema_version": "1.0.17",
+                        "schema_version": "1.0.22",
                         "source": "Blacklists_co",
                         "source_uri": "http://blacklists.co/",
                         "observables": [
@@ -334,7 +334,7 @@ def success_enrich_body():
                         "confidence": "High",
                         "count": 1,
                         "description": "Detected on blocklist",
-                        "schema_version": "1.0.17",
+                        "schema_version": "1.0.22",
                         "source": "LAPPS Grid Blacklist",
                         "source_uri": "http://www.lappsgrid.org/",
                         "observables": [
@@ -352,12 +352,12 @@ def success_enrich_body():
                 "docs": [
                     {
                         "relationship_type": "member-of",
-                        "schema_version": "1.0.17",
+                        "schema_version": "1.0.22",
                         "type": "relationship"
                     },
                     {
                         "relationship_type": "member-of",
-                        "schema_version": "1.0.17",
+                        "schema_version": "1.0.22",
                         "type": "relationship"
                     }
                 ]
