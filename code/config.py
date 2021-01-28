@@ -1,13 +1,12 @@
 import os
+import json
 from uuid import NAMESPACE_X500
-
-from __version__ import VERSION
 
 
 class Config:
-    VERSION = VERSION
-
-    SECRET_KEY = os.environ.get('SECRET_KEY', None)
+    settings = json.load(open('container_settings.json', 'r'))
+    SECRET_KEY = settings["SECRET_KEY"]
+    VERSION = settings["VERSION"]
 
     USER_AGENT = ('SecureX Threat Response Integrations '
                   '<tr-integrations-support@cisco.com>')
