@@ -4,7 +4,12 @@ from .utils import headers
 from pytest import fixture
 from http import HTTPStatus
 from api.errors import AUTH_ERROR
+from ..conftest import apivoid_response_mock
 from requests.exceptions import InvalidURL, ConnectionError
+from ..mock_for_tests import (
+    EXPECTED_RESPONSE_OF_JWKS_ENDPOINT,
+    RESPONSE_OF_JWKS_ENDPOINT_WITH_WRONG_KEY
+)
 from api.utils import (
     NO_AUTH_HEADER,
     WRONG_AUTH_TYPE,
@@ -95,9 +100,11 @@ def test_call_with_wrong_jwks_host(
 @patch('requests.get')
 def test_call_with_wrong_jwt_payload_structure(
         mock_request, route, client, valid_json, valid_jwt,
-        authorization_errors_expected_payload, get_public_key
+        authorization_errors_expected_payload
 ):
-    mock_request.return_value = get_public_key
+    mock_request.return_value = \
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT)
 
     response = client.post(
         route, json=valid_json,
@@ -112,9 +119,11 @@ def test_call_with_wrong_jwt_payload_structure(
 @patch('requests.get')
 def test_call_with_missing_jwks_host(
         mock_request, route, client, valid_json, valid_jwt,
-        authorization_errors_expected_payload, get_public_key
+        authorization_errors_expected_payload
 ):
-    mock_request.return_value = get_public_key
+    mock_request.return_value = \
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT)
 
     response = client.post(
         route, json=valid_json,
@@ -129,9 +138,11 @@ def test_call_with_missing_jwks_host(
 @patch('requests.get')
 def test_call_with_wrong_key(
         mock_request, route, client, valid_json, valid_jwt,
-        authorization_errors_expected_payload, get_wrong_public_key
+        authorization_errors_expected_payload
 ):
-    mock_request.return_value = get_wrong_public_key
+    mock_request.return_value = \
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=RESPONSE_OF_JWKS_ENDPOINT_WITH_WRONG_KEY)
 
     response = client.post(
         route, json=valid_json,
@@ -146,9 +157,11 @@ def test_call_with_wrong_key(
 @patch('requests.get')
 def test_call_with_wrong_jwt_structure(
         mock_request, route, client, valid_json,
-        authorization_errors_expected_payload, get_public_key
+        authorization_errors_expected_payload
 ):
-    mock_request.return_value = get_public_key
+    mock_request.return_value = \
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT)
 
     response = client.post(
         route, json=valid_json,
@@ -163,9 +176,11 @@ def test_call_with_wrong_jwt_structure(
 @patch('requests.get')
 def test_call_with_wrong_audience(
         mock_request, route, client, valid_json, valid_jwt,
-        authorization_errors_expected_payload, get_public_key
+        authorization_errors_expected_payload
 ):
-    mock_request.return_value = get_public_key
+    mock_request.return_value = \
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT)
 
     response = client.post(
         route, json=valid_json,
@@ -180,9 +195,11 @@ def test_call_with_wrong_audience(
 @patch('requests.get')
 def test_call_with_wrong_kid(
         mock_request, route, client, valid_json, valid_jwt,
-        authorization_errors_expected_payload, get_public_key
+        authorization_errors_expected_payload
 ):
-    mock_request.return_value = get_public_key
+    mock_request.return_value = \
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT)
 
     response = client.post(
         route, json=valid_json,

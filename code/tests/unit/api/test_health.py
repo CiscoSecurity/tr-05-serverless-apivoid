@@ -1,9 +1,12 @@
-from http import HTTPStatus
-
 from pytest import fixture
-from unittest.mock import patch
-
 from .utils import headers
+from http import HTTPStatus
+from unittest.mock import patch
+from ..conftest import apivoid_response_mock
+from ..mock_for_tests import (
+    EXPECTED_RESPONSE_OF_JWKS_ENDPOINT,
+    RESPONSE_OF_JWKS_ENDPOINT_WITH_WRONG_KEY
+)
 
 
 def routes():
@@ -27,10 +30,10 @@ def test_health_call_without_jwt_failure(
 @patch('requests.get')
 def test_health_call_with_invalid_jwt_failure(
         mock_request, route, client, valid_jwt,
-        invalid_jwt_expected_payload,
-        get_wrong_public_key
-):
-    mock_request.return_value = get_wrong_public_key
+        invalid_jwt_expected_payload):
+    mock_request.return_value = \
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=RESPONSE_OF_JWKS_ENDPOINT_WITH_WRONG_KEY)
     response = client.post(route,
                            headers=headers(valid_jwt(wrong_structure=True)))
 
@@ -42,11 +45,10 @@ def test_health_call_with_invalid_jwt_failure(
 def test_health_call_with_unauthorized_creds_failure(
         mock_request, route, client, valid_jwt,
         apivoid_response_unauthorized_creds,
-        unauthorized_creds_expected_payload,
-        get_public_key
-):
+        unauthorized_creds_expected_payload):
     mock_request.side_effect = (
-        get_public_key,
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
         apivoid_response_unauthorized_creds
     )
     response = client.post(
@@ -59,11 +61,10 @@ def test_health_call_with_unauthorized_creds_failure(
 
 @patch('requests.get')
 def test_health_call_success(
-        mock_request, route, client, valid_jwt, apivoid_health_response_ok,
-        get_public_key
-):
+        mock_request, route, client, valid_jwt, apivoid_health_response_ok):
     mock_request.side_effect = (
-        get_public_key,
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
         apivoid_health_response_ok
     )
     response = client.post(route, headers=headers(valid_jwt()))
@@ -75,11 +76,10 @@ def test_health_call_success(
 @patch('requests.get')
 def test_health_call_failure(
         mock_request, route, client, valid_jwt,
-        apivoid_internal_server_error, internal_server_error_expected_payload,
-        get_public_key
-):
+        apivoid_internal_server_error, internal_server_error_expected_payload):
     mock_request.side_effect = (
-        get_public_key,
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
         apivoid_internal_server_error
     )
     response = client.post(route, headers=headers(valid_jwt()))
@@ -92,12 +92,11 @@ def test_health_call_failure(
 def test_health_with_ssl_error(
         mock_request, route, client, valid_jwt,
         apivoid_ssl_exception_mock,
-        ssl_error_expected_payload,
-        get_public_key
-):
+        ssl_error_expected_payload):
 
     mock_request.side_effect = (
-        get_public_key,
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
         apivoid_ssl_exception_mock
     )
 

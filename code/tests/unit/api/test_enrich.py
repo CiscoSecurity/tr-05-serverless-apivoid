@@ -1,9 +1,12 @@
-from http import HTTPStatus
-
 from pytest import fixture
-from unittest.mock import patch
-
 from .utils import headers
+from http import HTTPStatus
+from unittest.mock import patch
+from ..conftest import apivoid_response_mock
+from ..mock_for_tests import (
+    EXPECTED_RESPONSE_OF_JWKS_ENDPOINT,
+    RESPONSE_OF_JWKS_ENDPOINT_WITH_WRONG_KEY
+)
 
 
 def routes():
@@ -21,18 +24,14 @@ def route(request):
 def test_enrich_call_with_invalid_jwt_failure(
         mock_request, route, client, valid_jwt,
         invalid_jwt_expected_payload,
-        get_wrong_public_key
 ):
-    mock_request.return_value = get_wrong_public_key
+    mock_request.return_value = \
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=RESPONSE_OF_JWKS_ENDPOINT_WITH_WRONG_KEY)
     response = client.post(route, headers=headers(valid_jwt()))
 
     assert response.status_code == HTTPStatus.OK
     assert response.json == invalid_jwt_expected_payload
-
-
-@fixture(scope='module')
-def invalid_json():
-    return [{'type': 'ip'}]
 
 
 def test_enrich_call_without_jwt_failure(
@@ -47,9 +46,11 @@ def test_enrich_call_without_jwt_failure(
 @patch('requests.get')
 def test_enrich_call_with_valid_jwt_but_invalid_json_failure(
         mock_request, route, client, valid_jwt, invalid_json,
-        invalid_json_expected_payload, get_public_key
+        invalid_json_expected_payload
 ):
-    mock_request.return_value = get_public_key
+    mock_request.return_value = \
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT)
     response = client.post(route,
                            headers=headers(valid_jwt()),
                            json=invalid_json)
@@ -60,10 +61,11 @@ def test_enrich_call_with_valid_jwt_but_invalid_json_failure(
 @patch('requests.get')
 def test_enrich_call_success(
         mock_request, route, client, valid_jwt, valid_json,
-        success_enrich_expected_payload, apivoid_success_response,
-        get_public_key
-):
-    mock_request.side_effect = (get_public_key, apivoid_success_response)
+        success_enrich_expected_payload, apivoid_success_response):
+    mock_request.side_effect = (
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        apivoid_success_response)
     response = client.post(route, headers=headers(valid_jwt()),
                            json=valid_json)
     assert response.status_code == HTTPStatus.OK
@@ -93,18 +95,17 @@ def test_enrich_call_with_extended_error_handling(
         mock_request, route, client, valid_jwt, valid_json_multiple,
         success_enrich_expected_payload, apivoid_success_response,
         apivoid_response_invalid_host, internal_server_error_expected_payload,
-        apivoid_internal_server_error,
-        get_public_key
-):
+        apivoid_internal_server_error):
     mock_request.side_effect = [
-        get_public_key,
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
         apivoid_success_response,
         apivoid_response_invalid_host,
         apivoid_internal_server_error
     ]
-    response = client.post(
-        route, headers=headers(valid_jwt()), json=valid_json_multiple
-    )
+    response = client.post(route,
+                           headers=headers(valid_jwt()),
+                           json=valid_json_multiple)
     assert response.status_code == HTTPStatus.OK
     response = response.get_json()
     if route.startswith('/observe'):
@@ -126,11 +127,13 @@ def test_enrich_call_with_extended_error_handling(
 def test_enrich_with_ssl_error(
         mock_request, route, client, valid_jwt,
         valid_json, apivoid_ssl_exception_mock,
-        ssl_error_expected_payload,
-        get_public_key
-):
+        ssl_error_expected_payload):
 
-    mock_request.side_effect = (get_public_key, apivoid_ssl_exception_mock)
+    mock_request.side_effect = (
+        apivoid_response_mock(status_code=HTTPStatus.OK,
+                              payload=EXPECTED_RESPONSE_OF_JWKS_ENDPOINT),
+        apivoid_ssl_exception_mock
+    )
 
     response = client.post(
         route, headers=headers(valid_jwt()), json=valid_json

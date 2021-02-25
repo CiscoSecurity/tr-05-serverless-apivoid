@@ -3,16 +3,11 @@ import jwt
 from app import app
 from pytest import fixture
 from http import HTTPStatus
+from api.utils import WRONG_KEY
 from unittest.mock import MagicMock
 from requests.exceptions import SSLError
 from tests.unit.mock_for_tests import PRIVATE_KEY
 from api.errors import INVALID_ARGUMENT, AUTH_ERROR
-from tests.unit.mock_for_tests import (
-    EXPECTED_RESPONSE_OF_JWKS_ENDPOINT,
-    RESPONSE_OF_JWKS_ENDPOINT_WITH_WRONG_KEY
-)
-
-from api.utils import WRONG_KEY
 
 
 @fixture(scope='session')
@@ -60,21 +55,9 @@ def valid_json():
     return [{'type': 'ip', 'value': '1.1.1.1'}]
 
 
-@fixture(scope='function')
-def get_public_key():
-    mock_response = MagicMock()
-    payload = EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
-
-    mock_response.json = lambda: payload
-    return mock_response
-
-
-@fixture(scope='function')
-def get_wrong_public_key():
-    mock_response = MagicMock()
-    payload = RESPONSE_OF_JWKS_ENDPOINT_WITH_WRONG_KEY
-    mock_response.json = lambda: payload
-    return mock_response
+@fixture(scope='module')
+def invalid_json():
+    return [{'type': 'ip'}]
 
 
 def apivoid_response_mock(status_code, payload=None, reason=None):
