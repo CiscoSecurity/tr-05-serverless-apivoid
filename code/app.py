@@ -1,13 +1,11 @@
-from flask import Flask, jsonify, g
-
 from api.enrich import enrich_api
 from api.health import health_api
 from api.respond import respond_api
-from api.watchdog import watchdog_api
 from api.version import version_api
-
-from api.errors import TRFormattedError
+from flask import Flask, jsonify, g
 from api.utils import jsonify_result
+from api.watchdog import watchdog_api
+from api.errors import TRFormattedError
 
 app = Flask(__name__)
 

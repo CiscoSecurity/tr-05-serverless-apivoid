@@ -24,10 +24,15 @@ def test_health_call_without_jwt_failure(
     assert response.json == authorization_header_is_missing_expected_payload
 
 
+@patch('requests.get')
 def test_health_call_with_invalid_jwt_failure(
-        route, client, invalid_jwt, invalid_jwt_expected_payload
+        mock_request, route, client, valid_jwt,
+        invalid_jwt_expected_payload,
+        get_wrong_public_key
 ):
-    response = client.post(route, headers=headers(invalid_jwt))
+    mock_request.return_value = get_wrong_public_key
+    response = client.post(route,
+                           headers=headers(valid_jwt(wrong_structure=True)))
 
     assert response.status_code == HTTPStatus.OK
     assert response.json == invalid_jwt_expected_payload
@@ -38,10 +43,14 @@ def test_health_call_with_unauthorized_creds_failure(
         mock_request, route, client, valid_jwt,
         apivoid_response_unauthorized_creds,
         unauthorized_creds_expected_payload,
+        get_public_key
 ):
-    mock_request.return_value = apivoid_response_unauthorized_creds
+    mock_request.side_effect = (
+        get_public_key,
+        apivoid_response_unauthorized_creds
+    )
     response = client.post(
-        route, headers=headers(valid_jwt)
+        route, headers=headers(valid_jwt())
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -50,10 +59,14 @@ def test_health_call_with_unauthorized_creds_failure(
 
 @patch('requests.get')
 def test_health_call_success(
-        mock_request, route, client, valid_jwt, apivoid_health_response_ok
+        mock_request, route, client, valid_jwt, apivoid_health_response_ok,
+        get_public_key
 ):
-    mock_request.return_value = apivoid_health_response_ok
-    response = client.post(route, headers=headers(valid_jwt))
+    mock_request.side_effect = (
+        get_public_key,
+        apivoid_health_response_ok
+    )
+    response = client.post(route, headers=headers(valid_jwt()))
 
     assert response.status_code == HTTPStatus.OK
     assert response.json == {'data': {'status': 'ok'}}
@@ -62,10 +75,14 @@ def test_health_call_success(
 @patch('requests.get')
 def test_health_call_failure(
         mock_request, route, client, valid_jwt,
-        apivoid_internal_server_error, internal_server_error_expected_payload
+        apivoid_internal_server_error, internal_server_error_expected_payload,
+        get_public_key
 ):
-    mock_request.return_value = apivoid_internal_server_error
-    response = client.post(route, headers=headers(valid_jwt))
+    mock_request.side_effect = (
+        get_public_key,
+        apivoid_internal_server_error
+    )
+    response = client.post(route, headers=headers(valid_jwt()))
 
     assert response.status_code == HTTPStatus.OK
     assert response.json == internal_server_error_expected_payload
@@ -75,13 +92,17 @@ def test_health_call_failure(
 def test_health_with_ssl_error(
         mock_request, route, client, valid_jwt,
         apivoid_ssl_exception_mock,
-        ssl_error_expected_payload
+        ssl_error_expected_payload,
+        get_public_key
 ):
 
-    mock_request.side_effect = apivoid_ssl_exception_mock
+    mock_request.side_effect = (
+        get_public_key,
+        apivoid_ssl_exception_mock
+    )
 
     response = client.post(
-        route, headers=headers(valid_jwt)
+        route, headers=headers(valid_jwt())
     )
 
     assert response.status_code == HTTPStatus.OK

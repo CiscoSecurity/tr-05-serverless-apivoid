@@ -1,24 +1,23 @@
-from datetime import datetime
+import jwt
+
+from app import app
+from pytest import fixture
 from http import HTTPStatus
 from unittest.mock import MagicMock
 from requests.exceptions import SSLError
-
-from authlib.jose import jwt
-from pytest import fixture
-
+from tests.unit.mock_for_tests import PRIVATE_KEY
 from api.errors import INVALID_ARGUMENT, AUTH_ERROR
-from app import app
+from tests.unit.mock_for_tests import (
+    EXPECTED_RESPONSE_OF_JWKS_ENDPOINT,
+    RESPONSE_OF_JWKS_ENDPOINT_WITH_WRONG_KEY
+)
+
+from api.utils import WRONG_KEY
 
 
 @fixture(scope='session')
-def secret_key():
-    # Generate some string based on the current datetime.
-    return datetime.utcnow().isoformat()
-
-
-@fixture(scope='session')
-def client(secret_key):
-    app.secret_key = secret_key
+def client():
+    app.rsa_private_key = PRIVATE_KEY
 
     app.testing = True
 
@@ -28,35 +27,54 @@ def client(secret_key):
 
 @fixture(scope='session')
 def valid_jwt(client):
-    header = {'alg': 'HS256'}
+    def _make_jwt(
+            key='some_key',
+            jwks_host='visibility.amp.cisco.com',
+            aud='http://localhost',
+            kid='02B1174234C29F8EFB69911438F597FF3FFEE6B7',
+            ctr_entities_limit=0,
+            wrong_structure=False
+    ):
+        payload = {
+            'key': key,
+            'jwks_host': jwks_host,
+            'aud': aud,
+            'CTR_ENTITIES_LIMIT': ctr_entities_limit
+        }
 
-    payload = {'key': 'test_api_key'}
+        if wrong_structure:
+            payload.pop('key')
 
-    secret_key = client.application.secret_key
+        return jwt.encode(
+            payload, client.application.rsa_private_key, algorithm='RS256',
+            headers={
+                'kid': kid
+            }
+        )
 
-    return jwt.encode(header, payload, secret_key).decode('ascii')
+    return _make_jwt
 
 
-@fixture(scope='session')
-def invalid_jwt(valid_jwt):
-    header, payload, signature = valid_jwt.split('.')
+@fixture(scope='module')
+def valid_json():
+    return [{'type': 'ip', 'value': '1.1.1.1'}]
 
-    def jwt_decode(s: str) -> dict:
-        from authlib.common.encoding import urlsafe_b64decode, json_loads
-        return json_loads(urlsafe_b64decode(s.encode('ascii')))
 
-    def jwt_encode(d: dict) -> str:
-        from authlib.common.encoding import json_dumps, urlsafe_b64encode
-        return urlsafe_b64encode(json_dumps(d).encode('ascii')).decode('ascii')
+@fixture(scope='function')
+def get_public_key():
+    mock_response = MagicMock()
+    payload = EXPECTED_RESPONSE_OF_JWKS_ENDPOINT
 
-    payload = jwt_decode(payload)
+    mock_response.json = lambda: payload
+    return mock_response
 
-    # Corrupt the valid JWT by tampering with its payload.
-    payload['superuser'] = True
 
-    payload = jwt_encode(payload)
-
-    return '.'.join([header, payload, signature])
+@fixture(scope='function')
+def get_wrong_public_key():
+    mock_response = MagicMock()
+    payload = RESPONSE_OF_JWKS_ENDPOINT_WITH_WRONG_KEY
+    mock_response.json = lambda: payload
+    return mock_response
 
 
 def apivoid_response_mock(status_code, payload=None, reason=None):
@@ -150,7 +168,7 @@ def apivoid_internal_server_error():
 
 
 @fixture(scope='session')
-def apivoid_response_unauthorized_creds(secret_key):
+def apivoid_response_unauthorized_creds():
     return apivoid_response_mock(
         HTTPStatus.OK,
         {
@@ -161,7 +179,7 @@ def apivoid_response_unauthorized_creds(secret_key):
 
 
 @fixture(scope='session')
-def apivoid_response_invalid_host(secret_key):
+def apivoid_response_invalid_host():
     return apivoid_response_mock(
         HTTPStatus.OK,
         {
@@ -179,8 +197,7 @@ def invalid_jwt_expected_payload(route):
             "errors": [
                 {
                     "code": AUTH_ERROR,
-                    "message": "Authorization failed: "
-                               "Failed to decode JWT with provided key",
+                    "message": f"Authorization failed: {WRONG_KEY}",
                     "type": "fatal"
                 }
             ]
@@ -256,7 +273,7 @@ def internal_server_error_expected_payload(route):
 
 
 @fixture(scope='session')
-def apivoid_ssl_exception_mock(secret_key):
+def apivoid_ssl_exception_mock():
     mock_exception = MagicMock()
     mock_exception.reason.args.__getitem__().verify_message \
         = 'self signed certificate'
