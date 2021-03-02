@@ -1,12 +1,10 @@
-
 [![Gitter Chat](https://img.shields.io/badge/gitter-join%20chat-brightgreen.svg)](https://gitter.im/CiscoSecurity/Threat-Response "Gitter Chat")
+
 # APIVoid Relay (Cisco Hosted)
 
 A Cisco SecureX Concrete Relay implementation using [APIVoid](https://www.apivoid.com/about/) as a third-party Cyber Threat Intelligence service provider.
 
 The Relay itself is just a simple application written in Python that can be easily packaged and deployed.  This relay is now Cisco Hosted and no longer requires AWS Lambda.
-
-The code is provided here purely for educational purposes.
 
 ## Rationale
 
@@ -15,6 +13,11 @@ The code is provided here purely for educational purposes.
 
 ## Testing (Optional)
 
+Open the code folder in your terminal.
+```
+cd code
+```
+
 If you want to test the application you will require Docker and several dependencies from the [requirements.txt](requirements.txt) file:
 ```
 pip install --upgrade --requirement requirements.txt
@@ -22,9 +25,9 @@ pip install --upgrade --requirement requirements.txt
 
 You can perform two kinds of testing:
 
-- Run static code analysis checking for any semantic discrepancies and [PEP 8] https://www.python.org/dev/peps/pep-0008/) compliance:
+- Run static code analysis checking for any semantic discrepancies and [PEP 8](https://www.python.org/dev/peps/pep-0008/) compliance:
 
-  `flake8 code`
+  `flake8 .`
 
 - Run the suite of unit tests and measure the code coverage:
 
@@ -43,7 +46,7 @@ In order to build the application, we need to use a `Dockerfile`.
  1. Open a terminal.  Build the container image using the `docker build` command.
 
 ```
-docker build -t tr-05-apivoid
+docker build -t tr-05-apivoid .
 ```
 
  2. Once the container is built, and an image is successfully created, start your container using the `docker run` command and specify the name of the image we have just created.  By default, the container will listen for HTTP requests using port 9090.
@@ -91,24 +94,6 @@ docker logs tr-05-apivoid
 
 - `ip`
 - `domain`
-
-### JWT Payload Structure
-
-```json
-{
-  "key": "<APIVOID_API_KEY>"
-}
-```
-
-### Supported Environment Variables
-
-- `CTR_ENTITIES_LIMIT`
-  - Restricts the maximum number of CTIM entities of each type returned in a
-  single response per each requested observable.
-  - Applies to the following CTIM entities:
-    - `Indicator`,
-    - `Sighting`.
-  - Must be a positive integer. Defaults to `100` (if unset or incorrect).
 
 ### CTIM Mapping Specifics
 
