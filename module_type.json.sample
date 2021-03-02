@@ -3,7 +3,7 @@
     "default_name": "APIVoid",
     "short_description": "Threat Analysis APIs for Threat Detection & Prevention",
     "description": "**Threat Analysis APIs:**\n\nAPIVoid provides JSON APIs useful for cyber threat analysis, threat detection and threat prevention,\nreducing and automating the manual work of security analysts. With our APIs you can identify malicious IP\naddresses, get reputation of a website, get SSL certificate details, perform DNS records lookups\nand much more! Each API service has also a simple web interface that allows you to\nutilize the APIs from your web browser.",
-    "tips": "When configuring the APIVoid integration, you must first gather some information from your APIVoid account\n\n1. Log into APIVoid, click **My API Keys**\n2. Enter a **tag** and click **Add API Key**\n3. Copy the new **API Key** into a file, or leave the tab open\n4. Complete the **Add New APIVoid Module** form:\n    - **Module Name** - Leave the default name or enter a name that is meaningful to you\n    - **API-Key** - Enter the API-Key retrieved from your account information\n5. Click **Save** to complete the APIVoid module configuration",
+    "tips": "When configuring this integration, you must first gather some information from your APIVoid account\n\n1. Log into APIVoid, click **My API Keys**\n2. Enter a **tag** and click **Add API Key**\n3. Copy the new **API Key** into a file, or leave the tab open\n4. Complete the **Add New APIVoid Module** form:\n    - **Module Name** - Leave the default name or enter a name that is meaningful to you\n    - **API-Key** - Enter the API-Key retrieved from your account information.\n    - **Entities Limit** - Enter the limit that restricts the maximum number of CTIM entities of each type returned in a single response per each requested observable. Must be a positive integer. Defaults to 100 (if unset or incorrect).\n\n5. Click **Save** to complete the APIVoid module configuration",
     "external_references": [
         {
             "label": "Sign Up",
@@ -21,7 +21,14 @@
             "label": "APIVoid API-Key:",
             "required": true,
             "tooltip": "Retrieved from apivoid.com"
-        }
+        },
+        {
+            "key": "custom_CTR_ENTITIES_LIMIT",
+            "type": "integer",
+            "label": "Entities Limit",
+            "tooltip": "Restricts the maximum number of `Sightings` and `Indicators`",
+            "required": false
+    }
     ],
     "capabilities": [
         {
@@ -34,17 +41,14 @@
         }
     ],
     "properties": {
-        "url": "https://ciscohosted.url",
         "supported-apis": [
             "health",
             "observe/observables"
         ],
         "auth-type": "configuration-token",
-        "configuration-token-alg": "HS256",
-        "configuration-token-key": "SECRETKEYHERE"
+        "configuration-token-alg": "RS256",
+        "custom_jwks_host": "visibility.amp.cisco.com",
+        "url": "https://ciscohosted.url"
     },
-    "flags": [
-        "serverless"
-    ],
     "logo": "data:image/png;base64,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"
 }
