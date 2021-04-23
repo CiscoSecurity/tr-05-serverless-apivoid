@@ -63,3 +63,11 @@ class InvalidArgumentError(TRFormattedError):
             INVALID_ARGUMENT,
             f'Invalid JSON payload received. {message}'
         )
+
+
+class WatchdogError(TRFormattedError):
+    def __init__(self):
+        super().__init__(
+            code='health check failed',
+            message='Invalid Health Check'
+        )
