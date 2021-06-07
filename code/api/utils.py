@@ -1,11 +1,12 @@
-import jwt
 import json
-import requests
+from json.decoder import JSONDecodeError
 
-from requests.exceptions import SSLError
+import jwt
+import requests
 from flask import request, current_app, jsonify, g
-from requests.exceptions import ConnectionError, InvalidURL
 from jwt import InvalidSignatureError, InvalidAudienceError, DecodeError
+from requests.exceptions import ConnectionError, InvalidURL
+from requests.exceptions import SSLError
 
 from api.errors import (
     InvalidArgumentError,
@@ -41,6 +42,7 @@ def get_public_key(jwks_host, token):
     expected_errors = {
         ConnectionError: WRONG_JWKS_HOST,
         InvalidURL: WRONG_JWKS_HOST,
+        JSONDecodeError: WRONG_JWKS_HOST,
     }
 
     try:
@@ -154,4 +156,5 @@ def ssl_error_handler(func):
             return func(*args, **kwargs)
         except SSLError as error:
             raise APIVoidSSLError(error)
+
     return wrapper
