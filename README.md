@@ -70,6 +70,8 @@ docker logs tr-05-apivoid
 
 ## Implementation Details
 
+This application was developed and tested under Python version 3.9.
+
 ### Implemented Relay Endpoints
 
 - `POST /health`
