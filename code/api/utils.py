@@ -1,11 +1,12 @@
-import jwt
 import json
-import requests
+from json.decoder import JSONDecodeError
 
-from requests.exceptions import SSLError
+import jwt
+import requests
 from flask import request, current_app, jsonify, g
-from requests.exceptions import ConnectionError, InvalidURL
 from jwt import InvalidSignatureError, InvalidAudienceError, DecodeError
+from requests.exceptions import ConnectionError, InvalidURL, HTTPError
+from requests.exceptions import SSLError
 
 from api.errors import (
     InvalidArgumentError,
@@ -38,10 +39,16 @@ def set_ctr_entities_limit(payload):
 
 
 def get_public_key(jwks_host, token):
-    expected_errors = {
-        ConnectionError: WRONG_JWKS_HOST,
-        InvalidURL: WRONG_JWKS_HOST,
-    }
+    """
+    Get public key by requesting it from specified jwks host.
+    """
+
+    expected_errors = (
+        ConnectionError,
+        InvalidURL,
+        JSONDecodeError,
+        HTTPError,
+    )
 
     try:
         response = requests.get(f"https://{jwks_host}/.well-known/jwks")
@@ -55,9 +62,8 @@ def get_public_key(jwks_host, token):
             )
         kid = jwt.get_unverified_header(token)['kid']
         return public_keys.get(kid)
-    except tuple(expected_errors) as error:
-        message = expected_errors[error.__class__]
-        raise AuthorizationError(message)
+    except expected_errors:
+        raise AuthorizationError(WRONG_JWKS_HOST)
 
 
 def get_jwt():
@@ -77,10 +83,9 @@ def get_jwt():
 
     token = get_auth_token()
     try:
-        jwks_host = jwt.decode(
-            token, options={'verify_signature': False}
-        ).get('jwks_host')
-        assert jwks_host
+        jwks_payload = jwt.decode(token, options={'verify_signature': False})
+        assert 'jwks_host' in jwks_payload
+        jwks_host = jwks_payload.get('jwks_host')
         key = get_public_key(jwks_host, token)
         aud = request.url_root
         payload = jwt.decode(
@@ -154,4 +159,5 @@ def ssl_error_handler(func):
             return func(*args, **kwargs)
         except SSLError as error:
             raise APIVoidSSLError(error)
+
     return wrapper
