@@ -52,6 +52,7 @@ def get_public_key(jwks_host, token):
 
     try:
         response = requests.get(f"https://{jwks_host}/.well-known/jwks")
+        response.raise_for_status()
         jwks = response.json()
 
         public_keys = {}
