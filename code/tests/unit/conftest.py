@@ -257,7 +257,7 @@ def ssl_error_expected_payload():
 
 
 @fixture(scope='module')
-def success_enrich_body():
+def success_enrich_expected_payload():
     return {
         "data": {
             "indicators": {
@@ -337,8 +337,3 @@ def success_enrich_body():
             }
         }
     }
-
-
-@fixture(scope='module')
-def success_enrich_expected_payload(success_enrich_body):
-    return success_enrich_body
