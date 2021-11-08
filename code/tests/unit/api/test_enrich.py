@@ -10,9 +10,7 @@ from ..mock_for_tests import (
 
 
 def routes():
-    yield '/deliberate/observables'
     yield '/observe/observables'
-    yield '/refer/observables'
 
 
 @fixture(scope='module', params=routes(), ids=lambda route: f'POST {route}')
@@ -108,18 +106,17 @@ def test_enrich_call_with_extended_error_handling(
                            json=valid_json_multiple)
     assert response.status_code == HTTPStatus.OK
     response = response.get_json()
-    if route.startswith('/observe'):
-        for doc in response['data']['sightings']['docs']:
-            assert doc.pop('id')
-            assert doc.pop('observed_time')
-        for doc in response['data']['indicators']['docs']:
-            assert doc.pop('id')
-        for doc in response['data']['relationships']['docs']:
-            assert doc.pop('id')
-            assert doc.pop('source_ref').startswith('transient:sighting-')
-            assert doc.pop('target_ref').startswith('transient:indicator-')
-        assert response['errors'] == \
-            internal_server_error_expected_payload['errors']
+    for doc in response['data']['sightings']['docs']:
+        assert doc.pop('id')
+        assert doc.pop('observed_time')
+    for doc in response['data']['indicators']['docs']:
+        assert doc.pop('id')
+    for doc in response['data']['relationships']['docs']:
+        assert doc.pop('id')
+        assert doc.pop('source_ref').startswith('transient:sighting-')
+        assert doc.pop('target_ref').startswith('transient:indicator-')
+    assert response['errors'] == \
+        internal_server_error_expected_payload['errors']
     assert response['data'] == success_enrich_expected_payload['data']
 
 

@@ -5,19 +5,13 @@ from datetime import datetime
 from flask import Blueprint, g, current_app
 
 from api.schemas import ObservableSchema
-from api.utils import get_json, get_jwt, jsonify_data, jsonify_result
+from api.utils import get_json, get_jwt, jsonify_result
 from api.client import APIVoidClient
 
 enrich_api = Blueprint('enrich', __name__)
 
 
 get_observables = partial(get_json, schema=ObservableSchema(many=True))
-
-
-@enrich_api.route('/deliberate/observables', methods=['POST'])
-def deliberate_observables():
-    # There are no verdicts to extract.
-    return jsonify_data({})
 
 
 def get_confidence(engine):
@@ -108,9 +102,3 @@ def observe_observables():
                 )
 
     return jsonify_result()
-
-
-@enrich_api.route('/refer/observables', methods=['POST'])
-def refer_observables():
-    # Not implemented.
-    return jsonify_data([])

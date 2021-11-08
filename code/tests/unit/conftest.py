@@ -76,16 +76,6 @@ def apivoid_response_mock(status_code, payload=None, reason=None):
     return mock_response
 
 
-def expected_payload(route, body):
-    if route.endswith('/deliberate/observables'):
-        return {'data': {}}
-
-    if route.endswith('/refer/observables'):
-        return {'data': []}
-
-    return body
-
-
 @fixture(scope='function')
 def apivoid_health_response_ok():
     return apivoid_response_mock(
@@ -177,26 +167,21 @@ def apivoid_response_invalid_host():
 
 
 @fixture(scope='module')
-def invalid_jwt_expected_payload(route):
-    return expected_payload(
-        route,
-        {
-            "errors": [
-                {
-                    "code": AUTH_ERROR,
-                    "message": f"Authorization failed: {WRONG_KEY}",
-                    "type": "fatal"
-                }
-            ]
-        }
-    )
+def invalid_jwt_expected_payload():
+    return {
+        "errors": [
+            {
+                "code": AUTH_ERROR,
+                "message": f"Authorization failed: {WRONG_KEY}",
+                "type": "fatal"
+            }
+        ]
+    }
 
 
 @fixture(scope='module')
-def authorization_header_is_missing_expected_payload(route):
-    return expected_payload(
-        route,
-        {
+def authorization_header_is_missing_expected_payload():
+    return {
             "errors": [
                 {
                     "code": "authorization error",
@@ -206,14 +191,11 @@ def authorization_header_is_missing_expected_payload(route):
                 }
             ]
         }
-    )
 
 
 @fixture(scope='module')
-def invalid_json_expected_payload(route):
-    return expected_payload(
-        route,
-        {
+def invalid_json_expected_payload():
+    return {
             "errors": [
                 {
                     "code": INVALID_ARGUMENT,
@@ -224,14 +206,11 @@ def invalid_json_expected_payload(route):
                 }
             ]
         }
-    )
 
 
 @fixture(scope='module')
-def unauthorized_creds_expected_payload(route):
-    return expected_payload(
-        route,
-        {
+def unauthorized_creds_expected_payload():
+    return {
             "errors": [
                 {
                     "code": AUTH_ERROR,
@@ -240,14 +219,11 @@ def unauthorized_creds_expected_payload(route):
                 }
             ]
         }
-    )
 
 
 @fixture(scope='module')
-def internal_server_error_expected_payload(route):
-    return expected_payload(
-        route,
-        {
+def internal_server_error_expected_payload():
+    return {
             "errors": [
                 {
                     "code": "internal server error",
@@ -256,7 +232,6 @@ def internal_server_error_expected_payload(route):
                 }
             ]
         }
-    )
 
 
 @fixture(scope='session')
@@ -268,23 +243,17 @@ def apivoid_ssl_exception_mock():
 
 
 @fixture(scope='module')
-def ssl_error_expected_payload(route, client):
-    if route in ('/observe/observables', '/health'):
-        return {
-            'errors': [
-                {
-                    'code': 'unknown',
-                    'message': 'Unable to verify SSL certificate: '
-                               'Self signed certificate',
-                    'type': 'fatal'
-                }
-            ]
-        }
-
-    if route.endswith('/deliberate/observables'):
-        return {'data': {}}
-
-    return {'data': []}
+def ssl_error_expected_payload():
+    return {
+        'errors': [
+            {
+                'code': 'unknown',
+                'message': 'Unable to verify SSL certificate: '
+                           'Self signed certificate',
+                'type': 'fatal'
+            }
+        ]
+    }
 
 
 @fixture(scope='module')
@@ -371,5 +340,5 @@ def success_enrich_body():
 
 
 @fixture(scope='module')
-def success_enrich_expected_payload(route, success_enrich_body):
-    return expected_payload(route, success_enrich_body)
+def success_enrich_expected_payload(success_enrich_body):
+    return success_enrich_body
