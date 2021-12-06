@@ -1,7 +1,10 @@
+import traceback
+
+from flask import Flask, jsonify, g
+
 from api.enrich import enrich_api
 from api.health import health_api
 from api.version import version_api
-from flask import Flask, jsonify, g
 from api.utils import jsonify_result
 from api.watchdog import watchdog_api
 from api.errors import TRFormattedError
@@ -19,7 +22,7 @@ app.register_blueprint(version_api)
 
 @app.errorhandler(Exception)
 def handle_error(exception):
-    app.logger.error(exception)
+    app.logger.error(traceback.format_exc())
     code = getattr(exception, 'code', 500)
     message = getattr(exception, 'description', 'Something went wrong.')
     reason = '.'.join([
@@ -33,7 +36,7 @@ def handle_error(exception):
 
 @app.errorhandler(TRFormattedError)
 def handle_tr_formatted_error(error):
-    app.logger.error(error.json)
+    app.logger.error(traceback.format_exc())
     g.errors = [error.json]
     return jsonify_result()
 
